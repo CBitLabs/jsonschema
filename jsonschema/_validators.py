@@ -385,7 +385,12 @@ def extends_draft3(validator, extends, instance, schema):
 def type(validator, types, instance, schema):
     types = _utils.ensure_list(types)
 
-    if not any(validator.is_type(instance, type) for type in types):
+    is_correct_type = any(validator.is_type(instance, type) for type in types)
+    is_null = instance is None
+    is_nullable = 'x-nullable' in schema and schema['x-nullable'] == True and is_null
+
+    # if not any(validator.is_type(instance, type) for type in types):
+    if not is_correct_type or not is_nullable:
         yield ValidationError(_utils.types_msg(instance, types))
 
 
